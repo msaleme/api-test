@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="2c4005aa-7d22-447c-b235-9736008179ee" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="api-testFlow" doc:id="4f8144da-3f83-4878-bc6a-01fe1eb098a8" >
+		<http:listener doc:name="Listener" doc:id="1b5e41f5-2cd9-43ea-bef5-a4552c8c2d87" config-ref="HTTP_Listener_config" path="/api"/>
+		<set-variable value="#[output application/java
+---
+([1,2,3,4,5])]" doc:name="Set Variable" doc:id="8688737b-535c-4d3b-acc5-e236e3e9ef25" variableName="collection"/>
+		<set-payload value='hello world' doc:name="Set Payload" doc:id="417cf0b7-0882-4b0c-93ea-b4e3004bdff2" />
+		<foreach doc:name="For Each" doc:id="fb97d8e0-dfe2-4e70-a20e-d94bfaae4467" collection="#[vars.collection]">
+			<logger level="INFO" doc:name="Logger" doc:id="0cffadbb-b157-4f6a-98d9-9dab0f4fbb15" message="#['hello world' ++ vars.counter ++ payload]"/>
+		</foreach>
+		<ee:transform doc:name="Transform Message" doc:id="63d00b4d-ccf9-4d50-9660-01c96259ecb3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="api-testFlow1" doc:id="c44934d8-e455-4955-b265-372489c0fd1e" >
+		<http:listener doc:name="Listener" doc:id="415f8a41-ccde-44ad-a44c-d16cc76886d8" config-ref="HTTP_Listener_config" path="/ipinfo"/>
+		<http:request method="GET" doc:name="Request" doc:id="20f099b1-8fde-4ab7-bc12-a74dc2ec741a" url="http://ip-api.com/json/"/>
+		<ee:transform doc:name="Transform Message" doc:id="bfaec82f-6b84-424f-b478-483e25914ddc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	city: payload.city
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="array" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: object
+properties:
+    field1:
+        type: string
+    field2:
+        properties:
+            field21:
+                type: string
+            field22:
+                type: string]]></types:shape>
+    </types:type>
+    <types:type name="collection" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="ipinfo" format="json">
+      <types:shape format="weave" example="examples/ip-info.json"><![CDATA[%dw 2.0
+
+type ipinfo = {|
+  query: String, 
+  status: String, 
+  country: String, 
+  countryCode: String, 
+  region: String, 
+  regionName: String, 
+  city: String, 
+  zip: String, 
+  lat: Number {"typeId": "double"}, 
+  lon: Number {"typeId": "double"}, 
+  timezone: String, 
+  isp: String, 
+  org: String, 
+  "as": String
+|} {"example": "{\\\"query\\\":\\\"24.48.0.1\\\",\\\"status\\\":\\\"success\\\",\\\"country\\\":\\\"Canada\\\",\\\"countryCode\\\":\\\"CA\\\",\\\"region\\\":\\\"QC\\\",\\\"regionName\\\":\\\"Quebec\\\",\\\"city\\\":\\\"Montreal\\\",\\\"zip\\\":\\\"H1S\\\",\\\"lat\\\":45.5808,\\\"lon\\\":-73.5825,\\\"timezone\\\":\\\"America\\/Toronto\\\",\\\"isp\\\":\\\"Le Groupe Videotron Ltee\\\",\\\"org\\\":\\\"Videotron Ltee\\\",\\\"as\\\":\\\"AS5769 Videotron Telecom Ltee\\\"}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#8688737b-535c-4d3b-acc5-e236e3e9ef25">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="array" type="array"/>
+        </types:variables>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#bfaec82f-6b84-424f-b478-483e25914ddc">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="ipinfo"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>
